@@ -1,0 +1,116 @@
+#/*****************************************************************************/
+#/* BLOCK          : common.rule                                              */
+#/* VERSION        : 1.00                                                     */
+#/* DATE           : 2012.04                                                  */
+#/* AUTHOR         :                                                          */
+#/* HISTORY        : 1.                                                       */ 
+#/* FUNCTIONS      :                                                          */
+#/* DESCRIPTION    : make header file                                         */
+#/* REMARKS        :                                                          */
+#/*                                                                           */
+#/* COPYRIGHT(C) LG CNS Ltd. 2012                                             */
+#/*****************************************************************************/
+
+#
+#Command Rule define
+#
+## gcc ###
+#CC	=/opt/hp-gcc-4.6.0/bin/gcc -mlp64 -Waggregate-return#64bit
+CC	=/usr/local/bin/gcc -Waggregate-return
+PROC	=${ORACLE_HOME}/bin/proc 
+CTAG	=/usr/bin/ctags -t
+RM	=/usr/bin/rm -f
+MKDEP	=/usr/local/bin/gcc -M
+LN	=/usr/bin/ln -s
+MV	=/usr/bin/mv -f
+CP	=/usr/bin/cp -f 
+#AR	=/usr/ccs/bin/ar -X64 clq #64bit
+AR	=/usr/ccs/bin/ar clq
+INSTALL	=/usr/ucb/install -m 775 -o root
+#LD	=/usr/ccs/bin/ld -mlp64 -bnoentry -G -bdelcsect -bexpall #64bit
+LD	=/usr/ccs/bin/ld -bnoentry -G -bdelcsect -bexpall #64bit
+CAT	=/usr/bin/cat -u
+MKDIR	=/usr/bin/mkdir -p
+STRIP	=/usr/ccs/bin/strip
+DIRLIST	={file * |grep | sed 's/:/ /g' | awk '{printf "%s ", $1}'}
+PCCFLAGS=
+
+#Position Independent Code
+
+## gcc ###
+PIC = -fpic 
+### xlc ###
+#PIC = 
+
+## gcc ###
+SHR = -shared
+
+### xlc ###
+#SHR = -bM:SRE
+#SHR = -bshared -brtl
+#SHR = -bdynamic -brtl
+#SHR = -qmkshrobj
+
+#LIC = -Wl
+#LIBLIC = -Wl,-G
+LIBLIC =
+
+# TO BE...
+#LIC = -Wl,-brtl
+
+#юс╫ц...
+#LIC = -Wl,-G
+LIC =
+
+#Common Option define
+SRCDBG  =-g $(PIC)
+PROFILE =-p
+
+# Oracle Library
+#ORALIBS = /usr/lib/crt0_64.o \
+ORALIBS=	$(ORACLE_HOME)/lib/scorept.o \
+#		$(ORACLE_HOME)/lib/scorept.o \
+		$(ORACLE_HOME)/lib/sscoreed.o \
+		$(ORACLE_HOME)/rdbms/lib/kpudfo.o \
+		$(ORACLE_HOME)/lib/nautab.o \
+		$(ORACLE_HOME)/lib/naeet.o \
+		$(ORACLE_HOME)/lib/naect.o \
+		$(ORACLE_HOME)/lib/naedhs.o \
+		-L$(ORACLE_HOME)/lib -lclntsh -ldl -lc -lm -lpthreads\
+		-lodm -lbsd_r -lld -lperfstat -lmm -lpthread -lclient10 -lsql10
+
+# System Library
+#SYSLIBS=`cat $(ORACLE_HOME)/lib/sysliblist`
+
+PRCOBJS = $(PRCS:.pc=.o)
+PRCTMPS = $(PRCS:.pc=.c)
+CCOBJS  = $(SOURCES:.c=.o)
+OBJS = $(PRCOBJS) $(CCOBJS)
+
+.SUFFIXES: .o .c .pc
+.PRECIOUS: %.c
+
+.pc.c:
+	$(PROC) $(PCCFLAGS) $(PCCINCS) iname=$*.pc oname=$*.c
+.pc.o:
+	$(PROC) $(PCCFLAGS) $(PCCINCS) iname=$*.pc oname=$*.c
+	$(CC) -c $(CFLAGS) $(DFLAGS) $(INCS) $*.c
+.c.o:
+	$(CC) -c $(CFLAGS) $(DFLAGS) $(INCS) $<
+
+
+########################################################################
+# common make rule
+########################################################################
+all: $(LOAD_FILE)
+
+clean:
+	$(RM) $(OBJS) $(LOAD_FILE) core *.lis
+	@echo =======================================================
+	@echo $(LOAD_FILE) is cleaned!!
+	@echo =======================================================
+targetecho:
+	@echo =======================================================
+	@echo $(LOAD_FILE) is made!!
+	@echo =======================================================
+

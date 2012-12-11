@@ -1,0 +1,61 @@
+/******************************************************************************/
+/* NEW DELTA DATE : 2012.04.12                                                */
+/* BLOCK          : dbutil.pc                                                 */
+/* PROC-NAME      :                                                           */
+/* DATE           : 2012.04.12                                                */
+/* FUNCTIONS      :                                                           */
+/* DESCRIPTION    :                                                           */
+/* REMARKS        :                                                           */
+/******************************************************************************/
+/***********************************************************
+	Include Header
+***********************************************************/
+#include "main.h"
+
+EXEC SQL INCLUDE SQLCA;
+EXEC SQL INCLUDE "sqlca.h";
+EXEC SQL INCLUDE "oraca.h";
+EXEC SQL INCLUDE "sqlcpr.h";
+
+/* SQL MACRO  */
+#define SQLCODE         sqlca.sqlcode
+#define SQLERRM	        sqlca.sqlerrm.sqlerrmc
+#define SQLCOUNT        sqlca.sqlerrd[2]
+#define SQLNODATA       1403
+#define SQLNULL	        -1405
+#define SQLDUP          -1
+#define SQLOK           0
+
+int db_Conn()
+{
+	char username[] = "marantz";
+	char password[] = "cctv001";
+	char dbname[] = "dbdoom";
+
+	EXEC SQL CONNECT :username IDENTIFIED BY :password USING :dbname;
+
+	if ( SQLCODE != SQLOK ) {
+		log_printf(LOG_ARG,"ORACLE CONNECT FAIL!! [%s]",SQLERRM);
+		return FALSE;
+	} else {
+		log_printf(LOG_ARG,"ORACLE CONNECT !!");
+	}
+
+	return TRUE;
+}
+
+int db_Close()
+{
+	EXEC SQL ROLLBACK WORK RELEASE;
+	
+	if ( SQLCODE != SQLOK ) {
+		log_printf(LOG_ARG,"ORACLE DISCONNECT FAIL!! [%s]",SQLERRM);
+		return FALSE;
+	} else {
+		log_printf(LOG_ARG,"ORACLE DISCONNECTED !!");
+	}
+	
+	return TRUE;
+}
+
+/* EOF */

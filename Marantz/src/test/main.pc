@@ -1,0 +1,59 @@
+/******************************************************************************/
+/* NEW DELTA DATE : 2012.04.12                                                */
+/* BLOCK          : main.pc                                                   */
+/* PROC-NAME      :                                                           */
+/* DATE           : 2012.04.12                                                */
+/* FUNCTIONS      :                                                           */
+/* DESCRIPTION    :                                                           */
+/* REMARKS        :                                                           */
+/******************************************************************************/
+/***********************************************************
+	Include Header
+***********************************************************/
+#include <stdio.h>
+#include "main.h"
+#include "log.h"
+
+int main( int argc, char *argv)	{
+
+	/*	SET LOG LEVEL
+		[PROCESS NAME] [ARG]
+		ARG - 0, LOG             | LOG_ARG 0
+		ARG - 1, LOG ERROR       | ERR_ARG 1
+		ARG - 2, LOG ERROR DEBUG | DBG_ARG 2
+
+		DEFAULT - 2, LOG ERROR DEBUG
+	*/
+	if ( argc > 1) {
+		gi_LogLevel = (int)atoi((char *)&argv[1]);
+	} else {
+		gi_LogLevel = 2;
+	}
+		
+	log_printf(LOG_ARG,">>>>>>>>>>>>>>>>>>>>>>>>>");
+	log_printf(LOG_ARG,"TEST START!!");
+	log_printf(LOG_ARG,">>>>>>>>>>>>>>>>>>>>>>>>>");
+
+	db_Conn();
+	/**************************************************************************/
+	/* TODO:WRITE BIZ START */
+	/**************************************************************************/
+	{
+		/* TODO : BIZ WRITE*/
+		char lc_temp[256] = {0x00,};
+		memset(lc_temp,0x31,sizeof(lc_temp));
+				
+		dump_printf(lc_temp,sizeof(lc_temp));
+	}
+	/**************************************************************************/
+	/* TODO:WRITE BIZ END */
+	/**************************************************************************/
+	db_Close();
+
+	log_printf(LOG_ARG,"<<<<<<<<<<<<<<<<<<<<<<<<<");
+	log_printf(LOG_ARG,"TEST END!!");
+	log_printf(LOG_ARG,"<<<<<<<<<<<<<<<<<<<<<<<<<");
+
+	return 0;
+	
+}

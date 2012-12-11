@@ -1,0 +1,73 @@
+#/*****************************************************************************/
+#/* NEW DELTA DATE : 2012.12.11.                                              */
+#/* BLOCK          : common rule                                              */
+#/* VERSION        : 1.00                                                     */
+#/* DATE           : 2012.12.11.                                              */
+#/* AUTHOR         : marantz                                                  */
+#/* HISTORY        :                                                          */
+#/* FUNCTIONS      :                                                          */
+#/* DESCRIPTION    : makefile                                                 */
+#/* REMARKS        :                                                          */
+#/*****************************************************************************/
+
+#
+#Command Rule define
+#
+## gcc ###
+CC		=/usr/bin/gcc -Waggregate-return
+CTAG	=/usr/bin/ctags -t
+RM		=/bin/rm -f
+MKDEP	=/usr/local/bin/gcc -M
+LN		=/bin/ln -s
+MV		=/bin/mv -f
+CP		=/bin/cp -f 
+AR		=/usr/ccs/bin/ar clq
+INSTALL	=/usr/ucb/install -m 775 -o root
+LD		=/usr/ccs/bin/ld -bnoentry -G -bdelcsect -bexpall #64bit
+CAT		=/usr/bin/cat -u
+MKDIR	=/usr/bin/mkdir -p
+STRIP	=/usr/ccs/bin/strip
+DIRLIST	={file * | grep | sed 's/:/ /g' | awk '{printf "%s ", $1}'}
+
+#Position Independent Code
+## gcc ###
+PIC = -fpic 
+
+## gcc ###
+SHR = -shared
+
+#LIC = -Wl,-G
+LIC = -lobgc
+
+#Common Option define
+SRCDBG  =-g $(PIC)
+PROFILE =-p
+
+CCOBJS  = $(SOURCES:.m=.o)
+OBJS = $(CCOBJS)
+
+.SUFFIXES: .o .c .m
+.PRECIOUS: %.c
+
+.c.o:
+#	$(CC) -c $(CFLAGS) $(DFLAGS) $(INCS) $<
+	$(CC) -c $(CFLAGS) $(INCS) $<
+.m.o:
+#	$(CC) -c $(CFLAGS) $(DFLAGS) $(INCS) $<
+	$(CC) -c $(CFLAGS) $(INCS) $<
+
+########################################################################
+# common make rule
+########################################################################
+all: $(LOAD_FILE)
+
+clean:
+	$(RM) $(OBJS) $(LOAD_FILE) core
+	@echo =======================================================
+	@echo $(LOAD_FILE) is CLEANED!!
+	@echo =======================================================
+targetecho:
+	@echo =======================================================
+	@echo $(LOAD_FILE) is MADE!!
+	@echo =======================================================
+
